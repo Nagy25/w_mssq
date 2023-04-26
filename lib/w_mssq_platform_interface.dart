@@ -26,4 +26,6 @@ abstract class WMssqPlatform extends PlatformInterface {
   Future<String?> getPlatformVersion() {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
+
+  Future<String> getString();
 }

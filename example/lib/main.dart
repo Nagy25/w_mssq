@@ -17,12 +17,14 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
+  String _data = '';
   final _wMssqPlugin = WMssq();
 
   @override
   void initState() {
     super.initState();
     initPlatformState();
+    initString();
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -47,6 +49,12 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  Future<void> initString() async {
+    final data = await _wMssqPlugin.getString() ?? 'Unknown platform version';
+    _data = data;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -55,7 +63,7 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: Text('Running on: $_data\n'),
         ),
       ),
     );

@@ -27,6 +27,8 @@ class WMssqPlugin : public flutter::Plugin {
       std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 };
 
+std::string ReturnString(const std::string& input);
+
 }  // namespace w_mssq
 
 #endif  // FLUTTER_PLUGIN_W_MSSQ_PLUGIN_H_

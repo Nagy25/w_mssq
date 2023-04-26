@@ -11,7 +11,16 @@ class MethodChannelWMssq extends WMssqPlatform {
 
   @override
   Future<String?> getPlatformVersion() async {
-    final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
+    final version =
+        await methodChannel.invokeMethod<String>('getPlatformVersion');
     return version;
+  }
+
+  @override
+  Future<String> getString() async {
+    print('begin');
+    final data = await methodChannel
+        .invokeMethod<String>('returnString', {'input': 'this is my data'});
+    return data.toString();
   }
 }

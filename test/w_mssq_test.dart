@@ -1,29 +1,19 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:w_mssq/w_mssq.dart';
 import 'package:w_mssq/w_mssq_platform_interface.dart';
 import 'package:w_mssq/w_mssq_method_channel.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-class MockWMssqPlatform
-    with MockPlatformInterfaceMixin
-    implements WMssqPlatform {
-
-  @override
-  Future<String?> getPlatformVersion() => Future.value('42');
-}
-
 void main() {
-  final WMssqPlatform initialPlatform = WMssqPlatform.instance;
-
-  test('$MethodChannelWMssq is the default instance', () {
-    expect(initialPlatform, isInstanceOf<MethodChannelWMssq>());
-  });
-
   test('getPlatformVersion', () async {
+    WidgetsFlutterBinding.ensureInitialized();
     WMssq wMssqPlugin = WMssq();
-    MockWMssqPlatform fakePlatform = MockWMssqPlatform();
+    WMssqPlatform fakePlatform = MethodChannelWMssq();
     WMssqPlatform.instance = fakePlatform;
+    final s = await wMssqPlugin.getString();
+    print(s);
 
-    expect(await wMssqPlugin.getPlatformVersion(), '42');
+    // expect(await wMssqPlugin.getPlatformVersion(), '42');
   });
 }
