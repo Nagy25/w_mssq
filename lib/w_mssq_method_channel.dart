@@ -22,8 +22,7 @@ class MethodChannelWMssq extends WMssqPlatform {
   }
 
   @override
-  Future execute() {
-    // TODO: implement execute
-    throw UnimplementedError();
+  Future<List> execute({required String query}) async {
+    return await methodChannel.invokeMethod('sqlQuery', {'query': query});
   }
 }

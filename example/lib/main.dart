@@ -15,7 +15,9 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _result = '';
+  String _data = '';
   final _wMssqPlugin = WMssq();
+  final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
@@ -32,6 +34,16 @@ class _MyAppState extends State<MyApp> {
 
   void close() {
     _wMssqPlugin.close();
+  }
+
+  void _execute(String query) async {
+    final l = await _wMssqPlugin.execute(query: query);
+    print(l.length);
+    l.forEach((element) {
+      print(element);
+    });
+    _data = l[0]["ID"] + " - " + l[0]['MachineName'];
+    setState(() {});
   }
 
   @override
@@ -55,6 +67,16 @@ class _MyAppState extends State<MyApp> {
                 height: 100,
               ),
               Text('Running on: $_result\n'),
+              TextField(
+                controller: _controller,
+              ),
+              const SizedBox(
+                height: 100,
+              ),
+              ElevatedButton(
+                  onPressed: () => _execute(_controller.text),
+                  child: const Text('getData')),
+              Text('data: $_data'),
             ],
           ),
         ),

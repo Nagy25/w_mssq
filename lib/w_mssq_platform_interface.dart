@@ -27,5 +27,5 @@ abstract class WMssqPlatform extends PlatformInterface {
 
   Future<void> closeConnection();
 
-  Future<dynamic> execute();
+  Future<List> execute({required String query});
 }

@@ -34,6 +34,8 @@ SQLHENV env;
 namespace w_mssq {
 std::string getColumnName(SQLHSTMT stmt, int col);
 std::string wstring_to_utf8(const std::wstring& wstr);
+std::wstring string_to_wstring(const std::string& str);
+
 
 std::string sqlConnection(const std::string& serverName) {
     typedef __int64 INT64;
@@ -203,29 +205,62 @@ WMssqPlugin::WMssqPlugin() {}
 WMssqPlugin::~WMssqPlugin() {}
 
 
+flutter::EncodableList map_to_encodable(const std::vector<std::map<std::string, std::string>>& vec) {
+  flutter::EncodableList list;
+  for (const auto& map : vec) {
+    flutter::EncodableMap encodable_map;
+    for (const auto& [key, value] : map) {
+      encodable_map[flutter::EncodableValue(key)] = flutter::EncodableValue(value);
+    }
+    list.push_back(flutter::EncodableValue(encodable_map));
+  }
+  return list;
+}
+
 
 
 void WMssqPlugin::HandleMethodCall(
     const flutter::MethodCall<flutter::EncodableValue>& method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
- if (method_call.method_name().compare("sqlConnection") == 0) {
-    // code for returnString function
+
+  if (method_call.method_name().compare("sqlConnection") == 0) {
+    // code for sqlConnection function
     std::string serverName;
     std::string r;
     if (auto arguments = std::get_if<flutter::EncodableMap>(method_call.arguments())) {
       if (arguments->find(flutter::EncodableValue("serverName")) != arguments->end()) {
         serverName = std::get<std::string>(arguments->at(flutter::EncodableValue("serverName")));
-           r = sqlConnection(serverName);
-
+        r = sqlConnection(serverName);
       }
     }
     result->Success(flutter::EncodableValue(r));
-  }else if(method_call.method_name().compare("closeConnection") == 0){
-  closeConnection();
+  } else if(method_call.method_name().compare("closeConnection") == 0) {
+    // code for closeConnection function
+    closeConnection();
+    result->Success(nullptr);
+  } else if(method_call.method_name().compare("sqlQuery") == 0) {
+    std::string query;
+       if (auto arguments = std::get_if<flutter::EncodableMap>(method_call.arguments())) {
+         if (arguments->find(flutter::EncodableValue("query")) != arguments->end()) {
+           query = std::get<std::string>(arguments->at(flutter::EncodableValue("query")));
+         }
+       }
+       std::wstring wide_query = string_to_wstring(query);
+       std::vector<std::map<std::string, std::string>> r = sqlQuery(wide_query);
+       result->Success(flutter::EncodableValue(map_to_encodable(r)));
+
   } else {
     result->NotImplemented();
   }
 }
+
+std::wstring string_to_wstring(const std::string& str) {
+    int length = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, NULL, 0);
+    std::vector<wchar_t> buffer(length);
+    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &buffer[0], length);
+    return std::wstring(&buffer[0]);
+}
+
 
 
 
