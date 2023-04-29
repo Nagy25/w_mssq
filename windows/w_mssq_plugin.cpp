@@ -32,6 +32,8 @@ SQLHENV env;
 
 
 namespace w_mssq {
+std::string getColumnName(SQLHSTMT stmt, int col);
+std::string wstring_to_utf8(const std::wstring& wstr);
 
 std::string sqlConnection(const std::string& serverName) {
     typedef __int64 INT64;
@@ -130,7 +132,7 @@ std::vector<std::map<std::string, std::string>> sqlQuery(const std::wstring& que
                 return result;
             }
 
-             row["test"] = std::string(static_cast<const char*>(reinterpret_cast<const void*>(buffer)), static_cast<std::size_t>(wcslen(buffer) * sizeof(wchar_t)));
+      row[getColumnName(stmt,i)] = std::string(static_cast<const char*>(reinterpret_cast<const void*>(buffer)), static_cast<std::size_t>(wcslen(buffer) * sizeof(wchar_t)));
 
 
         }
@@ -143,15 +145,28 @@ std::vector<std::map<std::string, std::string>> sqlQuery(const std::wstring& que
 
 
 
-std::wstring _getColumnName(SQLHSTMT stmt, int col) {
+std::string getColumnName(SQLHSTMT stmt, int col) {
     SQLWCHAR col_name[256];
     SQLSMALLINT col_name_len;
     SQLRETURN ret = SQLDescribeCol(stmt, (SQLUSMALLINT)col, col_name, 256, &col_name_len, NULL, NULL, NULL, NULL);
     if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-        return L"Error getting column name";
+        return "Error getting column name";
     }
-    return std::wstring(col_name, col_name + col_name_len);
+   std::wstring wstr(col_name, col_name + col_name_len);
+       std::string str =  wstring_to_utf8(wstr);
+    return str;
 }
+
+std::string wstring_to_utf8(const std::wstring& wstr) {
+    int utf8_length = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, NULL, 0, NULL, NULL);
+    if (utf8_length == 0) {
+        return "";
+    }
+    std::string str(utf8_length - 1, 0);
+    WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &str[0], utf8_length, NULL, NULL);
+    return str;
+}
+
 
 
 
