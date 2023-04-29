@@ -20,13 +20,18 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    initSqlConnect();
   }
 
-  Future<void> initSqlConnect() async {
-    final data = await _wMssqPlugin.sqlConnect() ?? 'Unknown platform version';
+  Future<void> startConnect() async {
+    final data = await _wMssqPlugin.sqlConnect(
+            serverName: 'AHMED-NAGY\\MSSQLSERVER01') ??
+        'Unknown platform version';
     _result = data;
     setState(() {});
+  }
+
+  void close() {
+    _wMssqPlugin.close();
   }
 
   @override
@@ -36,8 +41,22 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: Center(
-          child: Text('Running on: $_result\n'),
+        body: SizedBox(
+          width: 400,
+          child: Column(
+            children: [
+              ElevatedButton(
+                  onPressed: startConnect, child: const Text('connect')),
+              const SizedBox(
+                height: 20,
+              ),
+              ElevatedButton(onPressed: close, child: const Text('disconnect')),
+              const SizedBox(
+                height: 100,
+              ),
+              Text('Running on: $_result\n'),
+            ],
+          ),
         ),
       ),
     );

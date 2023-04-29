@@ -10,10 +10,20 @@ class MethodChannelWMssq extends WMssqPlatform {
   final methodChannel = const MethodChannel('w_mssq');
 
   @override
-  Future<String> sqlConnect() async {
-    print('begin');
+  Future<String> sqlConnect({required String serverName}) async {
     final data = await methodChannel
-        .invokeMethod<String>('sqlConnect', {'input': 'this is my data'});
+        .invokeMethod<String>('sqlConnection', {'serverName': serverName});
     return data.toString();
+  }
+
+  @override
+  Future<void> closeConnection() async {
+    await methodChannel.invokeMethod('closeConnection');
+  }
+
+  @override
+  Future execute() {
+    // TODO: implement execute
+    throw UnimplementedError();
   }
 }
