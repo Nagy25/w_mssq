@@ -1,15 +1,15 @@
 import 'w_mssq_platform_interface.dart';
 
-class WMssq {
-  Future<String?> sqlConnect({required String serverName}) {
+mixin WMssq {
+  static Future<String?> sqlConnect({required String serverName}) {
     return WMssqPlatform.instance.sqlConnect(serverName: serverName);
   }
 
-  Future<void> close() async {
+  static Future<void> close() async {
     return WMssqPlatform.instance.closeConnection();
   }
 
-  Future<List> execute({required String query}) async {
+  static Future<List> execute({required String query}) async {
     final data = await WMssqPlatform.instance.execute(query: query);
     final list = [];
     for (final element in data) {

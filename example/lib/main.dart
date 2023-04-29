@@ -16,7 +16,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String _result = '';
   String _data = '';
-  final _wMssqPlugin = WMssq();
   final TextEditingController _controller = TextEditingController();
 
   @override
@@ -24,20 +23,20 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
-  Future<void> startConnect() async {
-    final data = await _wMssqPlugin.sqlConnect(
-            serverName: 'AHMED-NAGY\\MSSQLSERVER01') ??
-        'Unknown platform version';
+  Future<void> _startConnect() async {
+    final data =
+        await WMssq.sqlConnect(serverName: 'AHMED-NAGY\\MSSQLSERVER01') ??
+            'Unknown platform version';
     _result = data;
     setState(() {});
   }
 
-  void close() {
-    _wMssqPlugin.close();
+  void _close() {
+    WMssq.close();
   }
 
   void _execute(String query) async {
-    final l = await _wMssqPlugin.execute(query: query);
+    final l = await WMssq.execute(query: query);
     print(l.length);
     l.forEach((element) {
       print(element);
@@ -58,11 +57,12 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             children: [
               ElevatedButton(
-                  onPressed: startConnect, child: const Text('connect')),
+                  onPressed: _startConnect, child: const Text('connect')),
               const SizedBox(
                 height: 20,
               ),
-              ElevatedButton(onPressed: close, child: const Text('disconnect')),
+              ElevatedButton(
+                  onPressed: _close, child: const Text('disconnect')),
               const SizedBox(
                 height: 100,
               ),
