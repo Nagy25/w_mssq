@@ -1,8 +1,13 @@
+import 'package:w_mssq/helpers/enums.dart';
+
 import 'w_mssq_platform_interface.dart';
 
 mixin WMssq {
-  static Future<String?> sqlConnect({required String serverName}) {
-    return WMssqPlatform.instance.sqlConnect(serverName: serverName);
+  static Future<ConnectionResult> sqlConnect(
+      {required String serverName}) async {
+    final result =
+        await WMssqPlatform.instance.sqlConnect(serverName: serverName);
+    return ConnectionResult.valueOf(result);
   }
 
   static Future<void> close() async {

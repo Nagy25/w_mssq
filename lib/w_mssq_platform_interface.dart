@@ -23,7 +23,7 @@ abstract class WMssqPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<String> sqlConnect({required String serverName});
+  Future<String?> sqlConnect({required String serverName});
 
   Future<void> closeConnection();
 

@@ -7,7 +7,6 @@ import 'package:w_mssq/w_mssq_method_channel.dart';
 void main() {
   test('getPlatformVersion', () async {
     WidgetsFlutterBinding.ensureInitialized();
-    WMssq wMssqPlugin = WMssq();
     WMssqPlatform fakePlatform = MethodChannelWMssq();
     WMssqPlatform.instance = fakePlatform;
 

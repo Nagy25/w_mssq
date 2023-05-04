@@ -45,14 +45,14 @@ std::string sqlConnection(const std::string& serverName) {
     // Allocate environment handle
     ret = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &env);
     if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
-        return "Error allocating environment handle";
+        return "environmentError"; // Error allocating environment handle
     }
 
     // Set the ODBC version to use
     ret = SQLSetEnvAttr(env, SQL_ATTR_ODBC_VERSION, (void*)SQL_OV_ODBC3, 0);
     if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
         SQLFreeHandle(SQL_HANDLE_ENV, env);
-        return "Error setting ODBC version";
+        return "odbcError"; // Error setting ODBC version
     }
 
     // Allocate connection handle
@@ -60,7 +60,7 @@ std::string sqlConnection(const std::string& serverName) {
     if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
 
         SQLFreeHandle(SQL_HANDLE_ENV, env);
-        return "Error allocating connection handle";
+        return "connectionError"; // Error allocating connection handle
     }
 
     // Connect to SQL Server using Windows authentication
@@ -82,10 +82,10 @@ std::string sqlConnection(const std::string& serverName) {
 
         SQLFreeHandle(SQL_HANDLE_DBC, dbc);
         SQLFreeHandle(SQL_HANDLE_ENV, env);
-        return "Error connecting to SQL Server";
+        return "sqlConnectionError";//Error connecting to SQL Server
     }
 
-    return "Connected to SQL Server";
+    return "connected";
 
 
 
