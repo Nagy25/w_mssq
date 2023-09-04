@@ -1,21 +1,30 @@
+import 'dart:async';
+
+import 'package:flutter/services.dart';
 import 'package:w_mssq/helpers/enums.dart';
 
 import 'w_mssq_platform_interface.dart';
 
 mixin WMssq {
-  static Future<ConnectionResult> sqlConnect(
-      {required String serverName}) async {
+
+  static Future<ConnectionResult> sqlConnect(List<dynamic> list) async {
+
+    BackgroundIsolateBinaryMessenger.ensureInitialized(list[1] as RootIsolateToken);
     final result =
-        await WMssqPlatform.instance.sqlConnect(serverName: serverName);
+        await WMssqPlatform.instance.sqlConnect(serverName: list[0].toString());
+
     return ConnectionResult.valueOf(result);
+
   }
 
   static Future<void> close() async {
     return WMssqPlatform.instance.closeConnection();
   }
 
-  static Future<List> execute({required String query}) async {
-    final data = await WMssqPlatform.instance.execute(query: query);
+  static Future<List> execute(List<dynamic> l) async {
+
+    BackgroundIsolateBinaryMessenger.ensureInitialized(l[1] as RootIsolateToken);
+    final data = await WMssqPlatform.instance.execute(query: l[0].toString());
     final list = [];
     for (final element in data) {
       Map cleanedElement = {};
@@ -30,5 +39,7 @@ mixin WMssq {
     }
 
     return list;
+
   }
+
 }

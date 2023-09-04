@@ -1,8 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:async';
 import 'package:w_mssq/w_mssq.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -15,7 +18,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _result = '';
-  String _data = '';
+  List<dynamic> _data = [];
   final TextEditingController _controller = TextEditingController();
 
   @override
@@ -23,11 +26,11 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
+  RootIsolateToken rootToken = RootIsolateToken.instance!;
   Future<void> _startConnect() async {
-    final data =
-        await WMssq.sqlConnect(serverName: 'AHMED-NAGY\\MSSQLSERVER01') ??
-            'Unknown platform version';
-    _result = data;
+
+     final s = await compute( WMssq.sqlConnect, ["AHMED-NAGY\\MSSQLSERVER01",rootToken]);
+     _result = s.name;
     setState(() {});
   }
 
@@ -35,14 +38,15 @@ class _MyAppState extends State<MyApp> {
     WMssq.close();
   }
 
+
+
   void _execute(String query) async {
-    final l = await WMssq.execute(query: query);
-    print(l.length);
-    l.forEach((element) {
-      print(element);
-    });
-    _data = l[0]["ID"] + " - " + l[0]['MachineName'];
+
+     final d = await  compute( WMssq.execute, [query,rootToken]);
+
+    _data = d;
     setState(() {});
+
   }
 
   @override
@@ -52,8 +56,7 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: SizedBox(
-          width: 400,
+        body: SingleChildScrollView(
           child: Column(
             children: [
               ElevatedButton(
@@ -74,9 +77,16 @@ class _MyAppState extends State<MyApp> {
                 height: 100,
               ),
               ElevatedButton(
-                  onPressed: () => _execute(_controller.text),
-                  child: const Text('getData')),
-              Text('data: $_data'),
+                  onPressed: () async{
+                    _execute("select TOP 200 * from pfx.dbo.Items");
+                  },
+                  child: const Text('getData from compute')),
+             ... _data.map((e) => Column(
+               children: [
+                 Text(e.toString()),
+                 const Divider(),
+               ],
+             )).toList()
             ],
           ),
         ),
