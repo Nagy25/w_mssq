@@ -1,13 +1,19 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:w_mssq/helpers/enums.dart';
 
 import 'w_mssq_platform_interface.dart';
 
+RootIsolateToken rootToken = RootIsolateToken.instance!;
 mixin WMssq {
+  static Future<ConnectionResult> sqlConnect(String serverName)  {
 
-  static Future<ConnectionResult> sqlConnect(List<dynamic> list) async {
+    return compute( _sqlConnect, ["AHMED-NAGY\\MSSQLSERVER01",rootToken]);
+  }
+
+  static Future<ConnectionResult> _sqlConnect(List<dynamic> list) async {
 
     BackgroundIsolateBinaryMessenger.ensureInitialized(list[1] as RootIsolateToken);
     final result =
@@ -21,7 +27,11 @@ mixin WMssq {
     return WMssqPlatform.instance.closeConnection();
   }
 
-  static Future<List> execute(List<dynamic> l) async {
+  static Future<List> execute(query) async {
+    return   compute( _execute, [query,rootToken]);
+  }
+  static Future<List> _execute(List<dynamic> l) async {
+
 
     BackgroundIsolateBinaryMessenger.ensureInitialized(l[1] as RootIsolateToken);
     final data = await WMssqPlatform.instance.execute(query: l[0].toString());

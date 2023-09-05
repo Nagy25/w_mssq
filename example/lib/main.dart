@@ -1,6 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:async';
 import 'package:w_mssq/w_mssq.dart';
 
@@ -26,10 +24,10 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
-  RootIsolateToken rootToken = RootIsolateToken.instance!;
+
   Future<void> _startConnect() async {
 
-     final s = await compute( WMssq.sqlConnect, ["AHMED-NAGY\\MSSQLSERVER01",rootToken]);
+     final s = await WMssq.sqlConnect("AHMED-NAGY\\MSSQLSERVER01");
      _result = s.name;
     setState(() {});
   }
@@ -42,7 +40,7 @@ class _MyAppState extends State<MyApp> {
 
   void _execute(String query) async {
 
-     final d = await  compute( WMssq.execute, [query,rootToken]);
+     final d = await  WMssq.execute(query);
 
     _data = d;
     setState(() {});
